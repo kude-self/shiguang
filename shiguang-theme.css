@@ -1,0 +1,17 @@
+/* 拾光所｜暖晨光背景主題 */
+:root{--bg:#f5eee4;--paper:#fffaf4;--paper2:#fbf5ec;--line:rgba(190,168,139,.42);--shadow:0 10px 30px rgba(83,62,39,.055)}
+html{background:#f4ecdf}
+body{position:relative;background:
+radial-gradient(ellipse at 7% 4%,rgba(255,255,255,.88) 0 8%,rgba(255,250,239,.46) 24%,transparent 48%),
+radial-gradient(ellipse at 94% 18%,rgba(225,205,177,.24),transparent 38%),
+linear-gradient(180deg,#faf6ef 0%,#f6efe5 42%,#f1e7da 100%);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.34;background-image:repeating-linear-gradient(0deg,rgba(112,91,67,.025) 0,rgba(112,91,67,.025) 1px,transparent 1px,transparent 5px);mix-blend-mode:multiply}
+body:after{content:"";position:fixed;pointer-events:none;z-index:-1;width:46vw;height:70vh;right:-12vw;top:4vh;opacity:.16;filter:blur(2px);background:radial-gradient(ellipse at 25% 20%,rgba(100,118,70,.32) 0 7%,transparent 8%),radial-gradient(ellipse at 48% 34%,rgba(100,118,70,.25) 0 8%,transparent 9%),radial-gradient(ellipse at 32% 51%,rgba(100,118,70,.19) 0 9%,transparent 10%),linear-gradient(72deg,transparent 47%,rgba(91,105,68,.20) 48% 49%,transparent 50%);transform:rotate(-10deg)}
+.topbar{background:rgba(250,246,239,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.card,.panel,.side,.editor,.preview-card,.traveler-card,.library-card,.timeline-box,.record-row,.quick-item{border-color:rgba(194,173,145,.40);background:rgba(255,252,247,.74);box-shadow:0 8px 25px rgba(81,61,40,.045);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.hero{border-color:rgba(190,168,139,.38);background:linear-gradient(112deg,rgba(255,252,246,.94),rgba(239,224,202,.78));box-shadow:0 14px 38px rgba(85,62,37,.065)}
+.hero-scene{background:radial-gradient(circle at 68% 26%,rgba(255,252,242,.98),rgba(234,216,190,.48) 54%,rgba(220,196,164,.13) 80%)}
+.quote-banner{border-color:rgba(190,168,139,.34);background:linear-gradient(90deg,rgba(251,244,233,.78),rgba(238,226,210,.67));box-shadow:none}
+.nav{border-color:rgba(190,168,139,.40);background:rgba(255,251,244,.84);box-shadow:0 12px 34px rgba(73,55,35,.09)}
+.field input,.field textarea,.field select{background:rgba(255,253,249,.82);border-color:rgba(190,168,139,.50)}
+@media(max-width:760px){body{background:radial-gradient(ellipse at 0% 0%,rgba(255,255,255,.86),transparent 42%),linear-gradient(180deg,#faf6ef,#f2e9dc)}body:after{width:72vw;height:45vh;right:-30vw;top:8vh;opacity:.11}.card,.panel,.side,.editor,.preview-card,.traveler-card,.library-card,.quick-item{box-shadow:0 6px 20px rgba(81,61,40,.04)}.hero{box-shadow:0 9px 26px rgba(85,62,37,.05)}}
