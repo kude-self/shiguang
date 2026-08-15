@@ -1,86 +1,22 @@
-/* 拾光所｜可靠上線修正版 2026-08-15 */
+/* 拾光所｜正式電子紀錄母版 2026-08-15 v2 */
 (()=>{
-  const $=id=>document.getElementById(id);
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const norm=s=>String(s||'').replace(/\s+/g,'');
-  const service=t=>{const j=norm(t?.journey);return j.includes('同行')||j.includes('三個月')?'同行':j.includes('拾光')||j.includes('四週')?'拾光':j.includes('初遇')?'初遇':''};
-  const traveler=id=>window.data?.travelers?.find(t=>t.id===$(id)?.value)||null;
-
-  function install(){
-    if(!window.data||typeof window.saveCloud!=='function'||typeof window.renderLibrary!=='function'||typeof window.confirmDraft!=='function'||typeof window.renderJourney!=='function') return false;
-    if(window.__SG_HOTFIX_INSTALLED__) return true;
-    window.__SG_HOTFIX_INSTALLED__=true;
-
-    const css=document.createElement('style');
-    css.textContent=`
-      .sg-record-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sg-delete{border:1px solid #dfc8bd;background:#fff7f3;color:#9a5d55;border-radius:999px;padding:9px 14px;cursor:pointer}.sg-clean{border:1px solid #d9c8b3;background:#fffaf4;border-radius:999px;padding:9px 14px;cursor:pointer;margin-left:auto}.sg-preview-grid{display:grid;gap:10px}.sg-preview-item{padding:14px 10px;border-bottom:1px solid #eadfce}.sg-preview-label{font-family:"Songti TC","Noto Serif TC",serif;color:#9b7b50;font-size:15px;margin-bottom:7px}.sg-preview-label:before{content:"✦ ";color:#b79560}.sg-preview-text{font-family:"Songti TC","Noto Serif TC",serif;white-space:pre-wrap;line-height:1.9;font-size:17px;color:#493d34}.sg-preview-foot{text-align:right;color:#8b7766;margin-top:16px;font-family:"Songti TC","Noto Serif TC",serif}
-      @media(max-width:760px){.record-row{grid-template-columns:1fr!important}.sg-record-actions{margin-top:10px}.sg-record-actions button{flex:1}.nav{padding-bottom:max(7px,env(safe-area-inset-bottom))!important}}
-      @media print{@page{size:A4;margin:0}html,body{background:#f5eee4!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body>*{display:none!important}#printSheet{display:block!important;width:210mm;min-height:297mm;margin:0!important;padding:0!important;background:#f7efe4!important}.sg-pdf{width:210mm;min-height:297mm;padding:16mm;position:relative;background:radial-gradient(circle at 10% 5%,#fff 0,transparent 34%),linear-gradient(180deg,#fbf7f0,#f3e7d7);color:#493d34;font-family:"Songti TC","Noto Serif TC",serif}.sg-pdf-head{display:flex;align-items:center;gap:6mm;padding-bottom:7mm;border-bottom:.35mm solid #d9c6aa}.sg-pdf-logo{width:24mm;height:24mm;object-fit:contain;mix-blend-mode:multiply}.sg-pdf-brand{font-size:8mm;letter-spacing:1.4mm}.sg-pdf-tag{font-size:3.6mm;color:#8a7868;margin-top:1.2mm}.sg-pdf-card{margin-top:12mm;padding:10mm 11mm;border:.35mm solid #e0ceb6;border-radius:7mm;background:rgba(255,253,249,.82)}.sg-pdf-title{font-size:10mm;margin:0 0 2mm;color:#5a4128}.sg-pdf-sub{font-size:4.4mm;color:#8b7563;margin-bottom:7mm}.sg-pdf-item{padding:3.7mm 0;border-bottom:.25mm solid #eadfce}.sg-pdf-item:last-child{border-bottom:0}.sg-pdf-label{font-size:4mm;color:#9b7b50;margin-bottom:1.5mm}.sg-pdf-text{font-size:4.7mm;line-height:1.8;white-space:pre-wrap}.sg-pdf-foot{position:absolute;left:16mm;right:16mm;bottom:12mm;padding-top:4mm;border-top:.3mm solid #decdb6;display:flex;justify-content:space-between;color:#806e5e;font-size:3.6mm}}
-    `;
-    document.head.appendChild(css);
-
-    function recordParts(rec){
-      if(Array.isArray(rec?.parts)&&rec.parts.length) return rec.parts.map(p=>({label:p.label||'',text:p.text||'—'}));
-      return String(rec?.text||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).map(b=>{const a=b.split('\n');return{label:a.shift()||'',text:a.join('\n')||'—'}});
-    }
-
-    window.showRecordPreview=rec=>{
-      const t=window.data.travelers.find(x=>x.id===rec.travelerId);
-      const sub=rec.type==='初遇紀錄'?'一場相遇，留下第一次看見。':rec.type==='拾光紀錄'?'四週整理，把一路看見的自己留下來。':'三個月，把真正發生在生活裡的改變留下來。';
-      $('previewTitle').textContent=`${t?.name||'旅人'}｜《${rec.type}》`;$('previewSub').textContent=sub;
-      $('previewBody').innerHTML=`<div class="sg-preview-grid">${recordParts(rec).map(p=>`<div class="sg-preview-item"><div class="sg-preview-label">${esc(p.label)}</div><div class="sg-preview-text">${esc(p.text)}</div></div>`).join('')}</div><div class="sg-preview-foot">𓇼 拾光所｜陪伴每一位旅人，拾起內在的光。</div>`;
-      $('recordPreviewCard').style.display='block';$('recordPreviewCard').dataset.recordId=rec.id||'';$('recordPreviewCard').scrollIntoView({behavior:'smooth',block:'start'});
-    };
-
-    window.deleteSavedRecord=async id=>{
-      const rec=window.data.confirmed.find(r=>r.id===id);if(!rec)return;
-      if(!confirm('確定刪除這份正式紀錄？刪除後無法復原。'))return;
-      window.data.confirmed=window.data.confirmed.filter(r=>r.id!==id);
-      await window.saveCloud();window.renderLibrary();
-    };
-
-    window.cleanupDuplicateRecords=async()=>{
-      const seen=new Set(),keep=[];let removed=0;
-      [...window.data.confirmed].sort((a,b)=>(b.updated||b.created||0)-(a.updated||a.created||0)).forEach(r=>{const k=`${r.travelerId}|${r.type}`;if(seen.has(k))removed++;else{seen.add(k);keep.push(r)}});
-      if(!removed)return alert('目前沒有重複的正式紀錄。');
-      if(!confirm(`找到 ${removed} 份重複紀錄。要保留每位旅人每種紀錄最新的一份，刪除其餘重複項目嗎？`))return;
-      window.data.confirmed=keep;await window.saveCloud();window.renderLibrary();alert(`已清理 ${removed} 份重複紀錄。`);
-    };
-
-    window.renderLibrary=()=>{
-      const el=$('libraryRecords');if(!el)return;const records=window.data.confirmed||[];
-      const clean=records.length>1?'<div style="display:flex;margin-bottom:8px"><button class="sg-clean" onclick="cleanupDuplicateRecords()">清理重複紀錄</button></div>':'';
-      el.innerHTML=clean+(records.length?records.map(r=>{const t=window.data.travelers.find(x=>x.id===r.travelerId);return`<div class="record-row"><div><strong>${esc(t?.name||'旅人')}｜${esc(r.type)}</strong><div class="row-meta">${esc((r.date||'').slice(0,10))}</div></div><div class="sg-record-actions"><button class="mini" onclick="viewSavedRecord('${r.id}')">查看正式版</button><button class="sg-delete" onclick="deleteSavedRecord('${r.id}')">刪除</button></div></div>`}).join(''):'<div class="empty">還沒有正式紀錄。完成文案確認後，會自動收藏在這裡。</div>');
-    };
-
-    const baseConfirm=window.confirmDraft;
-    window.confirmDraft=async()=>{
-      const id=$('createTraveler')?.value,type=$('recordType')?.value;if(!id)return alert('請先選擇旅人');
-      const parts=[...document.querySelectorAll('.draft-section')].map(x=>({label:x.querySelector('label')?.textContent.replace(/^\d+\s*/,'').trim()||'',text:x.querySelector('textarea')?.value.trim()||''}));
-      const existing=window.data.confirmed.find(r=>r.travelerId===id&&r.type===type);
-      if(!existing)return baseConfirm();
-      existing.parts=parts;existing.text=parts.map(p=>`${p.label}\n${p.text||'—'}`).join('\n\n');existing.date=new Date().toISOString();existing.updated=Date.now();await window.saveCloud();window.showRecordPreview(existing);$('draftStatus').textContent='✓ 已更新原本的正式紀錄，不會再新增重複卡片。';window.renderLibrary();
-    };
-
-    function applyJourneyRules(){
-      const t=traveler('journeyTraveler'),svc=service(t),view=$('journey');if(!view)return;
-      view.querySelectorAll('.stage-track').forEach(track=>{const stages=[...track.querySelectorAll('.stage')];if(svc==='初遇'){track.style.display='grid';track.style.gridTemplateColumns='1fr';stages.forEach((s,i)=>s.style.display=i===0?'block':'none')}else if(svc==='拾光'){track.style.display='grid';track.style.gridTemplateColumns='repeat(4,1fr)';stages.forEach(s=>s.style.display='block')}else if(svc==='同行')track.style.display='none'});
-    }
-    const baseJourney=window.renderJourney;window.renderJourney=()=>{baseJourney();setTimeout(applyJourneyRules,0)};
-
-    function applySessionRules(){const t=traveler('sessionTraveler'),svc=service(t),sel=$('sessionStage');if(!sel)return;if(svc==='初遇'){sel.innerHTML='<option>看見</option>';sel.value='看見';sel.disabled=true}else if(svc==='拾光'){sel.disabled=false;sel.innerHTML='<option>看見</option><option>分辨</option><option>找回</option><option>選擇</option>'}else if(svc==='同行'){sel.disabled=false;sel.innerHTML='<option>同行</option><option>生活練習</option>'}}
-    const baseOpen=window.openSessionForm;window.openSessionForm=()=>{baseOpen();setTimeout(applySessionRules,0)};$('sessionTraveler')?.addEventListener('change',applySessionRules);
-
-    function alignRecord(){const t=traveler('createTraveler'),svc=service(t),type=svc==='初遇'?'初遇紀錄':svc==='拾光'?'拾光紀錄':svc==='同行'?'旅程紀錄':'';if(!type)return;$('recordType').value=type;document.querySelectorAll('.record-type').forEach(x=>{const on=x.dataset.type===type;x.classList.toggle('active',on);x.style.display=on?'block':'none'})}
-    const baseDraft=window.buildDraft;window.buildDraft=()=>{alignRecord();baseDraft()};$('createTraveler')?.addEventListener('change',()=>setTimeout(()=>window.buildDraft(),0));
-
-    function previewParts(){const nodes=[...document.querySelectorAll('#previewBody .sg-preview-item')];return nodes.map(n=>({label:n.querySelector('.sg-preview-label')?.textContent||'',text:n.querySelector('.sg-preview-text')?.textContent||'—'}))}
-    window.printRecord=()=>{const parts=previewParts(),title=$('previewTitle')?.textContent||'《旅程紀錄》',sub=$('previewSub')?.textContent||'',today=new Intl.DateTimeFormat('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());$('printSheet').innerHTML=`<div class="sg-pdf"><div class="sg-pdf-head"><img class="sg-pdf-logo" src="32CCD19A-16B9-451E-8559-4A40F8CA3D92.png"><div><div class="sg-pdf-brand">拾光所</div><div class="sg-pdf-tag">陪伴每一位旅人，拾起內在的光。</div></div></div><section class="sg-pdf-card"><h1 class="sg-pdf-title">${esc(title)}</h1><div class="sg-pdf-sub">${esc(sub)}</div>${parts.map(p=>`<div class="sg-pdf-item"><div class="sg-pdf-label">✦ ${esc(p.label)}</div><div class="sg-pdf-text">${esc(p.text)}</div></div>`).join('')}</section><div class="sg-pdf-foot"><div>每一次相遇，都留下一點重新看見自己的光。</div><div>${esc(today)}<br>𓇼 拾光所</div></div></div>`;setTimeout(()=>window.print(),100)};
-
-    window.renderLibrary();applyJourneyRules();alignRecord();
-    document.documentElement.dataset.sgHotfix='20260815-1';
-    return true;
-  }
-
-  let tries=0;const timer=setInterval(()=>{tries++;if(install()||tries>120)clearInterval(timer)},100);
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function install(){if(!window.data||!window.renderLibrary)return false;if(window.__SG_MASTER_V2__)return true;window.__SG_MASTER_V2__=1;
+const css=document.createElement('style');css.textContent=`
+.sg-record-actions{display:flex;gap:8px;flex-wrap:wrap}.sg-delete{border:1px solid #dfc8bd;background:#fff8f3;color:#985f56;border-radius:999px;padding:9px 14px}.sg-clean{border:1px solid #d8c6ad;background:#fffaf3;border-radius:999px;padding:9px 14px;margin-left:auto}
+.sg-keepsake{position:relative;overflow:hidden;max-width:760px;margin:auto;padding:34px 34px 28px;border:1px solid #dfceb6;border-radius:28px;color:#44382f;background:linear-gradient(135deg,rgba(255,252,245,.98),rgba(248,239,224,.96));font-family:"Songti TC","Noto Serif TC",serif;box-shadow:0 16px 40px rgba(103,78,46,.08)}
+.sg-keepsake:before{content:"";position:absolute;right:-55px;top:-65px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(206,184,135,.22),transparent 68%)}.sg-keepsake:after{content:"❧  ·  ✦  ·  ❧";position:absolute;right:30px;bottom:24px;color:#b79a68;font-size:18px;opacity:.65}
+.sg-k-head{display:grid;grid-template-columns:92px 1fr;gap:20px;align-items:center;padding-bottom:22px;border-bottom:1px solid #dfceb6}.sg-k-logo{width:88px;height:88px;object-fit:contain;mix-blend-mode:multiply}.sg-k-kicker{font-size:14px;letter-spacing:.16em;color:#9a7d54}.sg-k-title{font-size:34px;line-height:1.25;margin:5px 0}.sg-k-sub{font-size:16px;color:#806e5e;line-height:1.8}.sg-k-intro{margin:25px 0 18px;padding:18px 20px;background:rgba(255,255,255,.45);border-radius:18px;border-left:3px solid #b9a06c;line-height:1.9}.sg-k-grid{display:grid;gap:14px}.sg-k-item{position:relative;padding:17px 18px 18px;background:rgba(255,253,249,.62);border-bottom:1px solid #e5d7c2}.sg-k-label{color:#a4814e;font-size:15px;margin-bottom:9px}.sg-k-label:before{content:"✦ ";}.sg-k-text{font-size:18px;line-height:1.9;white-space:pre-wrap}.sg-k-light{margin-top:18px;padding:20px;border-radius:18px;background:linear-gradient(90deg,rgba(232,239,215,.72),rgba(247,231,199,.52));}.sg-k-light .sg-k-text{font-size:20px}.sg-k-foot{margin-top:24px;padding-top:18px;border-top:1px solid #dfceb6;color:#8a7766;font-size:14px;line-height:1.8}.sg-k-note{font-size:13px;color:#a58c70;margin-top:7px}
+@media(max-width:760px){.record-row{grid-template-columns:1fr!important}.sg-record-actions button{flex:1}.sg-keepsake{padding:24px 22px;border-radius:22px}.sg-k-head{grid-template-columns:72px 1fr;gap:14px}.sg-k-logo{width:70px;height:70px}.sg-k-title{font-size:27px}.sg-k-text{font-size:17px}}
+@media print{@page{size:A4;margin:0}html,body{background:#f5eee4!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body>*{display:none!important}#printSheet{display:block!important;width:210mm;height:297mm;margin:0!important;padding:0!important;background:#f6eee2!important}#printSheet .sg-keepsake{box-sizing:border-box;width:210mm;max-width:none;height:297mm;border:0;border-radius:0;box-shadow:none;padding:18mm 18mm 14mm;background:linear-gradient(135deg,#fffdf8,#f4e8d7)}#printSheet .sg-k-head{grid-template-columns:27mm 1fr}#printSheet .sg-k-logo{width:25mm;height:25mm}#printSheet .sg-k-title{font-size:9mm}#printSheet .sg-k-sub{font-size:4mm}#printSheet .sg-k-intro{margin:7mm 0 4mm;padding:4mm 5mm}#printSheet .sg-k-grid{gap:2mm}#printSheet .sg-k-item{padding:3.4mm 4mm}#printSheet .sg-k-label{font-size:3.8mm;margin-bottom:1mm}#printSheet .sg-k-text{font-size:4.3mm;line-height:1.65}#printSheet .sg-k-light{margin-top:4mm;padding:4mm 5mm}#printSheet .sg-k-light .sg-k-text{font-size:4.8mm}#printSheet .sg-k-foot{margin-top:5mm;padding-top:3mm;font-size:3.4mm}}
+`;document.head.appendChild(css);
+const parts=rec=>Array.isArray(rec?.parts)&&rec.parts.length?rec.parts.map(p=>({label:p.label||'',text:p.text||'—'})):String(rec?.text||'').split(/\n\s*\n/).map(b=>{let a=b.trim().split('\n');return{label:a.shift()||'',text:a.join('\n')||'—'}});
+function keepsake(rec,t){let p=parts(rec);let light=p.find(x=>/拾起的光/.test(x.label));let rest=p.filter(x=>x!==light);let title=rec.type==='初遇紀錄'?'初遇紀錄':rec.type==='拾光紀錄'?'拾光紀錄':'旅程紀錄';let sub=rec.type==='初遇紀錄'?'一場相遇，留下第一次看見。':rec.type==='拾光紀錄'?'四週整理，把一路看見的自己留下來。':'三個月，把真正發生在生活裡的改變留下來。';return `<article class="sg-keepsake"><header class="sg-k-head"><img class="sg-k-logo" src="32CCD19A-16B9-451E-8559-4A40F8CA3D92.png"><div><div class="sg-k-kicker">拾光所｜${esc(title)}</div><div class="sg-k-title">${esc(t?.name||'旅人')}｜《${esc(title)}》</div><div class="sg-k-sub">${esc(sub)}</div></div></header><div class="sg-k-intro">今天留下的，不是為了替自己找到一個標準答案，<br>而是把這一次真正看見的自己，好好收藏下來。</div><div class="sg-k-grid">${rest.map(x=>`<section class="sg-k-item"><div class="sg-k-label">${esc(x.label)}</div><div class="sg-k-text">${esc(x.text)}</div></section>`).join('')}</div>${light?`<section class="sg-k-light"><div class="sg-k-label">這次拾起的光</div><div class="sg-k-text">${esc(light.text)}</div></section>`:''}<footer class="sg-k-foot">𓇼 拾光所｜陪伴每一位旅人，拾起內在的光。<div class="sg-k-note">每一次相遇，都是一束光的開始。</div></footer></article>`}
+window.showRecordPreview=rec=>{let t=window.data.travelers.find(x=>x.id===rec.travelerId);$('previewTitle').textContent='正式電子版預覽';$('previewSub').textContent='預覽、圖片與 PDF 使用同一份母版';$('previewBody').innerHTML=keepsake(rec,t);$('recordPreviewCard').style.display='block';$('recordPreviewCard').dataset.recordId=rec.id||'';$('recordPreviewCard').scrollIntoView({behavior:'smooth',block:'start'})};
+window.printRecord=()=>{let id=$('recordPreviewCard')?.dataset.recordId,rec=window.data.confirmed.find(x=>x.id===id);if(!rec)return alert('請先開啟一份正式紀錄');let t=window.data.travelers.find(x=>x.id===rec.travelerId);$('printSheet').innerHTML=keepsake(rec,t);setTimeout(()=>window.print(),100)};
+window.deleteSavedRecord=async id=>{let r=window.data.confirmed.find(x=>x.id===id);if(!r||!confirm('確定刪除這份正式紀錄？刪除後無法復原。'))return;window.data.confirmed=window.data.confirmed.filter(x=>x.id!==id);await window.saveCloud();window.renderLibrary()};
+window.cleanupDuplicateRecords=async()=>{let seen=new Set(),keep=[],removed=0;[...window.data.confirmed].reverse().forEach(r=>{let k=r.travelerId+'|'+r.type;if(seen.has(k))removed++;else{seen.add(k);keep.push(r)}});if(!removed)return alert('目前沒有重複紀錄。');if(!confirm(`找到 ${removed} 份重複紀錄，保留最新一份並刪除其餘項目？`))return;window.data.confirmed=keep.reverse();await window.saveCloud();window.renderLibrary()};
+window.renderLibrary=()=>{let el=$('libraryRecords');if(!el)return;let rs=window.data.confirmed||[];el.innerHTML=(rs.length>1?'<div style="display:flex;margin-bottom:8px"><button class="sg-clean" onclick="cleanupDuplicateRecords()">清理重複紀錄</button></div>':'')+(rs.length?rs.map(r=>{let t=window.data.travelers.find(x=>x.id===r.travelerId);return `<div class="record-row"><div><strong>${esc(t?.name||'旅人')}｜${esc(r.type)}</strong><div class="row-meta">${esc((r.date||'').slice(0,10))}</div></div><div class="sg-record-actions"><button class="mini" onclick="viewSavedRecord('${r.id}')">查看正式版</button><button class="sg-delete" onclick="deleteSavedRecord('${r.id}')">刪除</button></div></div>`}).join(''):'<div class="empty">還沒有正式紀錄。</div>')};
+window.renderLibrary();document.documentElement.dataset.sgMaster='20260815-v2';return true}
+let n=0,t=setInterval(()=>{if(install()||++n>120)clearInterval(t)},100);
 })();
