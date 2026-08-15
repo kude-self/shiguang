@@ -1,0 +1,24 @@
+/* 拾光所｜同行・三個月陪伴《旅程紀錄》6張正式母版 v1 */
+(()=>{
+ const W=1080,H=1350, bg='#f7f0e5', ink='#40382f', sage='#75845c', gold='#b99a5b', paper='#fffaf2';
+ const q=s=>document.querySelector(s); const esc=s=>String(s??'').trim();
+ function traveler(rec){return (window.data?.travelers||[]).find(t=>t.id===rec?.travelerId)||{} }
+ function sessions(rec){return (window.data?.sessions||[]).filter(s=>s.travelerId===rec?.travelerId).sort((a,b)=>(a.date||'').localeCompare(b.date||'')) }
+ function rr(c,x,y,w,h,r=28,fill=paper,stroke='#dfd1bc'){c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();c.strokeStyle=stroke;c.lineWidth=2;c.stroke()}
+ function text(c,t,x,y,size=30,weight=400,color=ink,max=880,lh=1.55){c.fillStyle=color;c.font=`${weight} ${size}px -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif`;let line='',yy=y;for(const ch of esc(t)||'—'){const test=line+ch;if(c.measureText(test).width>max&&line){c.fillText(line,x,yy);line=ch;yy+=size*lh}else line=test}if(line)c.fillText(line,x,yy);return yy+size*lh}
+ function header(c,no,title,sub,t){text(c,'拾光所｜旅程紀錄',80,82,24,600,sage);text(c,String(no).padStart(2,'0'),900,82,24,500,gold);text(c,title,80,150,52,700,ink);text(c,sub,80,205,25,400,'#7d7163');c.strokeStyle='#dfd1bc';c.beginPath();c.moveTo(80,245);c.lineTo(1000,245);c.stroke();text(c,`旅人｜${t.name||'旅人'}`,80,292,22,500,'#756a5d');}
+ function box(c,label,value,y,h=180){rr(c,70,y,940,h,28);text(c,'✦ '+label,105,y+52,25,650,gold);text(c,value||'—',105,y+105,29,400,ink,850,1.55)}
+ function footer(c,no){text(c,'拾光所｜陪伴每一位旅人，拾起內在的光。',80,1290,20,400,'#8a7d6d');text(c,`${no} / 6`,930,1290,18,400,'#a49786')}
+ function make(no,rec){const t=traveler(rec),ss=sessions(rec),s=ss[Math.min(no-1,Math.max(0,ss.length-1))]||{},last=ss.at(-1)||{},c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,W,H);
+   if(no===1){header(x,1,'出發時的我','重新認識自己，從此刻真實的位置開始。',t);box(x,'三個月前，我帶著什麼來',ss[0]?.bring||t.concern,345,205);box(x,'那時候的我，最在意的是',ss[0]?.insight||t.hope,575,205);box(x,'旅程開始時，我想為自己留下',ss[0]?.quote||ss[0]?.leave,805,205);box(x,'第一束拾起的光',ss[0]?.light,1035,145)}
+   if(no===2){header(x,2,'我看見的自己','把反覆出現的感受、習慣與聲音慢慢認出來。',t);box(x,'這段時間反覆出現的是',ss.slice(0,2).map(a=>a.insight||a.bring).filter(Boolean).join('／'),345,230);box(x,'我開始知道，哪些不是我的聲音',ss.find(a=>a.stage==='分辨')?.insight||s.insight,605,230);box(x,'真正屬於我的感受是',ss.find(a=>a.stage==='找回')?.bring||s.bring,865,230)}
+   if(no===3){header(x,3,'我真正重視的事','當外面的聲音安靜一點，我開始聽見自己的在意。',t);box(x,'我真正所在意的是',ss.find(a=>a.stage==='找回')?.insight||t.concern,345,230);box(x,'我不想再勉強自己的地方',ss.find(a=>/重新認識自己|找回/.test(a.stage||''))?.change||s.change,605,230);box(x,'我想重新放回生活裡的是',ss.find(a=>a.stage==='找回')?.light||s.light,865,230)}
+   if(no===4){header(x,4,'我正在練習的選擇','不是一次變成另一個人，而是在生活裡練習新的回應。',t);box(x,'我開始做出的新選擇',ss.find(a=>/選擇|練習新的選擇/.test(a.stage||''))?.change||s.change,345,230);box(x,'遇到熟悉的情境時，我可以',ss.find(a=>/練習新的選擇/.test(a.stage||''))?.insight||s.insight,605,230);box(x,'我想繼續練習的是',ss.find(a=>/練習新的選擇/.test(a.stage||''))?.leave||s.leave,865,230)}
+   if(no===5){header(x,5,'現在的我','回頭看，改變不一定很大，但已經真實發生在生活裡。',t);box(x,'和三個月前相比，我看見的改變',last.change||last.insight,345,230);box(x,'現在的我，更能夠',last.light||last.bring,605,230);box(x,'我想記得自己已經走到這裡',last.quote||last.leave,865,230)}
+   if(no===6){header(x,6,'一路走來','把這三個月真正發生的改變，好好收進自己的旅程裡。',t);box(x,'這一路，我拾起的光',ss.map(a=>a.light).filter(Boolean).slice(-4).join('・'),345,205);box(x,'我想帶回生活裡的選擇',last.change||last.insight,575,205);box(x,'留給未來的自己',last.leave||last.quote,805,205);box(x,'拾光所想留給你的話','你不需要一次走得很遠。願你記得，真正屬於你的方向，會在一次一次靠近自己的選擇裡慢慢清楚。',1035,155)}footer(x,no);return c}
+ function canvases(rec){return [1,2,3,4,5,6].map(n=>make(n,rec))}
+ function show(rec){window.__sgActiveRecord=rec;const host=q('#recordPreview');if(!host)return;host.innerHTML='';canvases(rec).forEach(c=>{c.style.cssText='width:100%;height:auto;display:block;margin:0 auto 18px;border-radius:18px;box-shadow:0 8px 30px rgba(70,55,35,.10)';host.appendChild(c)});host.classList.remove('hidden-preview');q('#afterConfirm')?.classList.remove('hidden-preview')}
+ function save(){const rec=window.__sgActiveRecord;if(!rec)return;canvases(rec).forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=`拾光所-旅程紀錄-${i+1}.png`;a.click()})}
+ function print(){const rec=window.__sgActiveRecord;if(!rec)return;const cs=canvases(rec),w=window.open('','_blank');w.document.write('<title>拾光所｜旅程紀錄</title><style>@page{size:1080px 1350px;margin:0}body{margin:0}img{width:1080px;height:1350px;display:block;page-break-after:always}</style>'+cs.map(c=>`<img src="${c.toDataURL('image/png')}">`).join(''));w.document.close();setTimeout(()=>w.print(),500)}
+ window.__sgCompanionShowRecordPreview=show;window.__sgCompanionSaveRecordImage=save;window.__sgCompanionPrintRecord=print;window.__sgCompanionCanvases=canvases;document.documentElement.dataset.sgCompanionMaster='v1';
+})();
