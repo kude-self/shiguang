@@ -3,7 +3,6 @@
   const $=id=>document.getElementById(id);
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 
-  // 防止重複送出，讓手機操作更安心。
   document.addEventListener('submit',e=>{
     const btn=e.target?.querySelector('button[type="submit"]');
     if(!btn||btn.dataset.busy==='1') return;
@@ -13,7 +12,6 @@
     setTimeout(()=>{btn.dataset.busy='0';btn.textContent=old},1400);
   },true);
 
-  // iPhone 友善圖片輸出：優先使用分享面板，否則開啟圖片供長按儲存。
   if(typeof window.saveRecordImage==='function'){
     window.saveRecordImage=async()=>{
       const card=$('recordPreviewCard');
@@ -25,46 +23,52 @@
         const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png',1));
         if(blob&&navigator.share){
           const file=new File([blob],name,{type:'image/png'});
-          if(!navigator.canShare||navigator.canShare({files:[file]})){
-            await navigator.share({files:[file],title:'拾光所旅程紀錄'});
-            return;
-          }
+          if(!navigator.canShare||navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'拾光所旅程紀錄'});return;}
         }
-        if(isIOS){
-          const url=URL.createObjectURL(blob);
-          const w=window.open(url,'_blank');
-          if(!w) location.href=url;
-          setTimeout(()=>URL.revokeObjectURL(url),60000);
-          return;
-        }
+        if(isIOS){const url=URL.createObjectURL(blob);const w=window.open(url,'_blank');if(!w)location.href=url;setTimeout(()=>URL.revokeObjectURL(url),60000);return;}
         const a=document.createElement('a');a.download=name;a.href=canvas.toDataURL('image/png');a.click();
       }catch(err){console.error(err);alert('圖片儲存沒有成功，請再試一次。');}
     };
   }
 
-  // PDF 按鈕在 iPhone 上提示使用列印頁的「分享 → 儲存到檔案」。
-  if(typeof window.printRecord==='function'){
-    const original=window.printRecord;
-    window.printRecord=()=>{
-      original();
-    };
+  const safeCreate=()=>{if(!window.data?.travelers?.length){alert('先建立第一位旅人，再開始製作旅程紀錄。');return false}return true};
+  document.querySelectorAll('[onclick*="go(\'create\')"],[onclick*="go(\"create\")"]').forEach(el=>el.addEventListener('click',e=>{if(!safeCreate()){e.preventDefault();e.stopImmediatePropagation()}},true));
+
+  document.addEventListener('focusin',e=>{if(!/INPUT|TEXTAREA|SELECT/.test(e.target?.tagName||''))return;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),220)});
+
+  /* 服務層級規則：初遇＝單次看見；拾光＝四週看見→分辨→找回→選擇；同行不套用拾光四階段。 */
+  const normalize=t=>(t||'').replace(/\s+/g,'');
+  function serviceOfJourneyView(){
+    const view=$('view-journey');
+    if(!view)return'';
+    const txt=normalize(view.innerText);
+    if(txt.includes('同行')||txt.includes('三個月'))return'同行';
+    if(txt.includes('拾光')||txt.includes('四週'))return'拾光';
+    if(txt.includes('初遇'))return'初遇';
+    return'';
   }
+  function fixJourneyStages(){
+    const view=$('view-journey');
+    if(!view||!view.classList.contains('active'))return;
+    const service=serviceOfJourneyView();
+    view.querySelectorAll('.stage-track').forEach(track=>{
+      if(service==='初遇'){
+        track.style.gridTemplateColumns='1fr';
+        [...track.querySelectorAll('.stage')].forEach((stage,i)=>{stage.style.display=i===0?'block':'none'});
+        const first=track.querySelector('.stage');
+        if(first){const label=[...first.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(label)label.textContent='看見';}
+      }else if(service==='拾光'){
+        track.style.gridTemplateColumns='repeat(4,1fr)';
+        [...track.querySelectorAll('.stage')].forEach(stage=>stage.style.display='block');
+      }else if(service==='同行'){
+        track.style.display='none';
+      }
+    });
+  }
+  const observer=new MutationObserver(()=>requestAnimationFrame(fixJourneyStages));
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  document.addEventListener('click',()=>setTimeout(fixJourneyStages,40),true);
+  setTimeout(fixJourneyStages,80);
 
-  // 沒有旅人時，避免進入空白製作流程。
-  const safeCreate=()=>{
-    if(!window.data?.travelers?.length){alert('先建立第一位旅人，再開始製作旅程紀錄。');return false}
-    return true;
-  };
-  document.querySelectorAll('[onclick*="go(\'create\')"],[onclick*="go(\"create\")"]').forEach(el=>{
-    el.addEventListener('click',e=>{if(!safeCreate()){e.preventDefault();e.stopImmediatePropagation()}},true);
-  });
-
-  // iPhone 鍵盤彈出時，避免底部導覽遮住輸入欄位。
-  document.addEventListener('focusin',e=>{
-    if(!/INPUT|TEXTAREA|SELECT/.test(e.target?.tagName||'')) return;
-    setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),220);
-  });
-
-  // 標記版本，方便確認 Safari 是否載入最新版。
-  document.documentElement.dataset.shiguangBuild='launch-1';
+  document.documentElement.dataset.shiguangBuild='launch-2';
 })();
