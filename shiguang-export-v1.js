@@ -1,0 +1,12 @@
+/* 拾光所｜三階正式紀錄統一輸出 v1：預覽母版＝PNG＝PDF */
+(()=>{
+ const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const $=id=>document.getElementById(id);
+ async function pdfLib(){if(window.jspdf?.jsPDF)return window.jspdf.jsPDF;await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)});return window.jspdf.jsPDF}
+ async function canvases(){const r=window.__sgActiveRecord;if(!r)return[];if(r.type==='旅程紀錄'&&window.__sgCompanionCanvases)return await window.__sgCompanionCanvases(r);if(r.type==='拾光紀錄'&&window.__sgPickupCanvases)return await window.__sgPickupCanvases(r);if(r.type==='初遇紀錄'){const host=$('previewBody');const img=host?.querySelector('img');if(img){const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');await new Promise(ok=>{if(img.complete)ok();else img.onload=ok});x.drawImage(img,0,0,1080,1350);return[c]}}return window.__sgMasterCanvases||[]}
+ const title=r=>r?.type==='旅程紀錄'?'旅程紀錄':r?.type==='拾光紀錄'?'拾光紀錄':'初遇紀錄';
+ async function share(blob,name,mime){if(IOS&&navigator.share){try{await navigator.share({files:[new File([blob],name,{type:mime})],title:'拾光所｜'+name});return true}catch(e){if(e?.name==='AbortError')return true}}return false}
+ window.__sgUnifiedSave=async()=>{const r=window.__sgActiveRecord,cs=await canvases();if(!r||!cs.length)return;for(let i=0;i<cs.length;i++){const blob=await new Promise(ok=>cs[i].toBlob(ok,'image/png',1)),name=`拾光所-${title(r)}${cs.length>1?'-'+(i+1):''}.png`;if(cs.length===1&&await share(blob,name,'image/png'))return;const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();await new Promise(ok=>setTimeout(ok,180))}};
+ window.__sgUnifiedPDF=async()=>{const r=window.__sgActiveRecord,cs=await canvases();if(!r||!cs.length)return;const J=await pdfLib();const pdf=new J({orientation:'portrait',unit:'px',format:[1080,1350],hotfixes:['px_scaling'],compress:true});cs.forEach((c,i)=>{if(i)pdf.addPage([1080,1350],'portrait');pdf.addImage(c.toDataURL('image/jpeg',.94),'JPEG',0,0,1080,1350,undefined,'FAST')});const blob=pdf.output('blob'),name=`拾光所-${title(r)}.pdf`;if(await share(blob,name,'application/pdf'))return;const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()};
+ document.documentElement.dataset.sgUnifiedExport='v1';
+})();
