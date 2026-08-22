@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7e7df">
+<title>🌷 我的上班小日子</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;color:#5f5965}body{background:linear-gradient(180deg,#f7e1d8,#eee3f6 28%,#e1eff5 55%,#e4f0e7 78%,#fff0cf)}
+.gate{min-height:100vh;display:grid;place-items:center;padding:18px}.login{width:min(92vw,420px);padding:24px 20px;border-radius:28px;background:linear-gradient(135deg,#fff8f3ee,#f6eefbee,#edf7f3ee);border:2px solid #fff;box-shadow:0 18px 50px rgba(91,72,99,.14)}.tiny{font-size:10px;letter-spacing:.18em;color:#998f9c}.login h1{font-size:25px;margin:8px 0 5px}.login p{font-size:12px;line-height:1.65;color:#89808c}.field{margin:12px 0}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}.field input{width:100%;min-height:46px;border:1px solid #dfd4df;border-radius:14px;background:#fffaf7;padding:10px 12px;font-size:16px;outline:none}.field input:focus{border-color:#c6aecb;box-shadow:0 0 0 3px #d9c8df40}.login button{width:100%;min-height:46px;border:0;border-radius:14px;background:linear-gradient(135deg,#d9a0aa,#a897c5);color:#fff;font-weight:900;margin-top:5px}.msg{min-height:20px;margin-top:8px;font-size:11px;color:#a06872}.loading{text-align:center;font-size:13px;color:#7d7481}.flower{font-size:34px}.syncbar{position:fixed;right:10px;bottom:12px;z-index:80;display:flex;gap:6px}.syncbar button{border:1px solid #fff;background:#fff9;color:#746b79;border-radius:99px;padding:8px 11px;font-size:10px;box-shadow:0 5px 15px #55495e1a}
+</style>
+</head>
+<body>
+<div id="root" class="gate"><div class="loading"><div class="flower">🌷</div><br>正在連接你的預約資料…</div></div>
+<script>
+const SUPA='https://tgfxrbghzzttqbpfwypw.supabase.co';
+const KEY='sb_publishable_ZtAF_kDvx1WGNM3RPIhxzA_nMjHQwyN';
+const AUTH_KEY='workdays_admin_session';
+const APP_KEY='shiftPayV5';
+const root=document.getElementById('root');
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function showLogin(msg=''){
+ root.className='gate';root.innerHTML=`<section class="login"><div class="tiny">PRIVATE · BOOKING SYNC</div><h1>🌷 我的上班小日子</h1><p>登入後，旅人從「拾光所｜旅程預約」送出的資料，會自動同步到你的預約頁與班表月曆。</p><div class="field"><label>管理者 Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label>密碼</label><input id="password" type="password" autocomplete="current-password"></div><button id="loginBtn">登入並同步 ♡</button><div id="msg" class="msg">${esc(msg)}</div></section>`;
+ document.getElementById('loginBtn').onclick=login;
+ document.getElementById('password').onkeydown=e=>{if(e.key==='Enter')login()};
+}
+async function login(){
+ const b=document.getElementById('loginBtn'),m=document.getElementById('msg');b.disabled=true;b.textContent='登入中…';m.textContent='';
+ try{const r=await fetch(`${SUPA}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value})});const x=await r.json();if(!r.ok||!x.access_token)throw new Error('登入資料不正確');localStorage.setItem(AUTH_KEY,JSON.stringify(x));await syncAndLoad(x.access_token)}catch(e){m.textContent=e.message||'登入失敗，請再試一次';b.disabled=false;b.textContent='登入並同步 ♡'}
+}
+async function refreshSession(s){
+ if(!s?.refresh_token)return null;
+ try{const r=await fetch(`${SUPA}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.refresh_token})});const x=await r.json();if(!r.ok||!x.access_token)return null;localStorage.setItem(AUTH_KEY,JSON.stringify(x));return x}catch{return null}
+}
+async function getBookings(token){
+ const url=`${SUPA}/rest/v1/traveler_bookings?select=id,traveler_name,journey,booking_date,booking_time,status,contact_method,instagram,contact_status,admin_note&status=neq.cancelled&order=booking_date.asc,booking_time.asc`;
+ const r=await fetch(url,{headers:{apikey:KEY,Authorization:`Bearer ${token}`}});if(r.status===401||r.status===403)throw new Error('AUTH');if(!r.ok)throw new Error('預約資料同步失敗');return r.json();
+}
+function mergeIntoLocal(rows){
+ let app;try{app=JSON.parse(localStorage.getItem(APP_KEY)||'null')}catch{};if(!app)app={};app.set=app.set||{};app.month=app.month||{};app.work=app.work||[];app.bookings=app.bookings||[];
+ const existing=new Map(app.bookings.map(b=>[String(b.id),b]));
+ const manual=app.bookings.filter(b=>!b.remote);
+ const remote=rows.map(r=>{const old=existing.get(String(r.id))||{};return {id:r.id,remote:true,date:r.booking_date,time:String(r.booking_time||'').slice(0,5),client:r.traveler_name||'',service:r.journey||'',fee:+old.fee||0,note:old.note||r.admin_note||'',status:r.status||'pending',contactMethod:r.contact_method||'',contactValue:r.instagram||'',contactStatus:r.contact_status||'new'}});
+ app.bookings=[...manual,...remote];localStorage.setItem(APP_KEY,JSON.stringify(app));
+}
+async function loadBase(){
+ const r=await fetch('./app-v11.html?v=booking-base-v11');if(!r.ok)throw new Error('主系統載入失敗');let t=await r.text();
+ const addon=`<style>.book.remote-book{background:#f4d9e6!important;border-color:#e8bfd2!important;color:#775b69!important}.remoteBadge{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:99px;background:#f3dce7;color:#936b7f;font-size:8px}.syncInfo{font-size:9px;color:#8e8590;margin-top:5px}</style><div class="syncbar"><button onclick="location.reload()">↻ 同步預約</button><button onclick="localStorage.removeItem('${AUTH_KEY}');location.reload()">登出</button></div>`;
+ t=t.replace('</body>',addon+'</body>');document.open();document.write(t);document.close();
+}
+async function syncAndLoad(token){
+ root.innerHTML='<div class="loading"><div class="flower">🌷</div><br>正在同步旅人的預約…</div>';
+ try{const rows=await getBookings(token);mergeIntoLocal(rows);await loadBase()}catch(e){if(e.message==='AUTH'){let s;try{s=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{};const fresh=await refreshSession(s);if(fresh)return syncAndLoad(fresh.access_token);localStorage.removeItem(AUTH_KEY);showLogin('登入已過期，請重新登入。')}else{root.innerHTML=`<section class="login"><h1>🌷 暫時無法同步</h1><p>${esc(e.message)}</p><button onclick="location.reload()">重新整理</button></section>`}}
+}
+(async()=>{let s;try{s=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{};if(!s?.access_token)return showLogin();await syncAndLoad(s.access_token)})();
+</script>
+</body></html>
