@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>一份拾光｜生日拾光</title>
+<meta name="theme-color" content="#f6efe4">
+<style>
+:root{--ink:#54483d;--gold:#b99255;--paper:#fffdf8;--line:#dfd2c1;--muted:#8a7d6f;--sage:#dfe6da;--blush:#f5e6df}
+*{box-sizing:border-box}html{background:#f3ede4}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.75;background:linear-gradient(180deg,#f8f3eb,#efe8dd)}
+.page{max-width:760px;margin:0 auto;padding:22px 14px 56px}.card{overflow:hidden;border-radius:28px;background:rgba(255,253,248,.98);border:1px solid rgba(185,146,85,.2);box-shadow:0 16px 46px rgba(82,68,51,.09)}
+.hero{position:relative;text-align:center;padding:48px 24px 34px;background:radial-gradient(circle at 15% 10%,rgba(239,202,111,.34),transparent 31%),radial-gradient(circle at 90% 72%,rgba(205,220,197,.5),transparent 29%),#fffdf8}.hero:after{content:"✦   ·   ✧";position:absolute;right:26px;top:22px;color:#c59e5e;letter-spacing:.35em;font-size:13px}
+.mark{width:78px;height:78px;margin:0 auto 10px;position:relative}.moon{position:absolute;left:12px;top:10px;width:48px;height:48px;border:1.7px solid var(--gold);border-right-color:transparent;border-radius:50%}.star{position:absolute;left:30px;top:20px;color:var(--gold);font-size:28px}.leaf{position:absolute;right:7px;bottom:7px;color:#879575;font-size:21px;transform:rotate(-22deg)}
+.eyebrow{font-family:"Songti TC",serif;letter-spacing:.24em;font-size:14px;color:#8e7652}.hero h1{font-family:"Songti TC",serif;font-weight:500;letter-spacing:.2em;font-size:34px;margin:8px 0 4px}.hero p{margin:0;color:var(--muted);font-size:15px}.pill{display:inline-block;margin:18px 0 6px;padding:8px 18px;border:1px solid var(--gold);border-radius:999px;color:#725d40}.limit{font-size:14px;color:#8d7a5d}
+.section{padding:30px}.section+.section{border-top:1px solid #eee4d6}.section h2{font-family:"Songti TC",serif;font-size:22px;font-weight:500;letter-spacing:.08em;margin:0 0 8px}.desc{font-size:14px;color:var(--muted);margin:0 0 20px}.grid{display:grid;gap:17px}.two{grid-template-columns:1fr 1fr}.field label{display:block;margin-bottom:6px;font-size:14px;color:#66594d}.req{color:#af705f}input,textarea{width:100%;border:1px solid var(--line);border-radius:15px;background:#fffefa;color:var(--ink);font-size:16px;padding:13px 14px;outline:none}textarea{min-height:108px;resize:vertical}input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(185,146,85,.11)}
+.note-card{padding:18px;border-radius:18px;background:linear-gradient(135deg,#faf4e9,#f5f4eb);font-size:14px;color:#716457}.check{display:flex;gap:10px;align-items:flex-start;font-size:14px}.check input{width:18px;height:18px;margin-top:4px;accent-color:#9c835c}.submit{width:100%;border:0;border-radius:17px;padding:15px 18px;background:#9b8058;color:#fff;font-size:17px;letter-spacing:.08em;cursor:pointer}.submit:disabled{opacity:.55}.micro{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px}.msg{display:none;margin-top:14px;padding:14px 16px;border-radius:14px;font-size:14px}.ok{background:#edf3e9;color:#53634b}.err{background:#f8e9e5;color:#8d4d43}.footer{text-align:center;padding:28px 18px 34px;color:#9a8a77;font-size:13px}.footer b{font-weight:500;color:#7a6750;letter-spacing:.12em}
+@media(max-width:560px){.page{padding:0 0 38px}.card{border-radius:0;border-left:0;border-right:0}.hero{padding:42px 20px 30px}.hero h1{font-size:29px}.section{padding:25px 20px}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="page"><main class="card">
+<section class="hero"><div class="mark"><span class="moon"></span><span class="star">✦</span><span class="leaf">⌁</span></div><div class="eyebrow">一份拾光</div><h1>生日拾光</h1><p>一份專屬於你的光，給此刻的你。</p><div class="pill">NT$222 ＋ 郵寄 NT$60</div><div class="limit">每月限量 10 份</div></section>
+<form id="birthdayForm">
+<section class="section"><h2>寫給新一歲的你</h2><p class="desc">不需要準備標準答案。留下現在最接近你的文字，我會依這些內容為你整理一張專屬的生日拾光卡。</p><div class="grid">
+<div class="two grid"><div class="field"><label>卡片上希望怎麼稱呼你 <span class="req">*</span></label><input name="display_name" required maxlength="40" placeholder="例如：小晴"></div><div class="field"><label>生日 <span class="req">*</span></label><input type="date" name="birthday" required></div></div>
+<div class="field"><label>新的一歲，你幾歲？</label><input type="number" name="turning_age" min="1" max="120" placeholder="選填"></div>
+<div class="field"><label>如果可以送給新一歲的自己一句話，你想說什麼？</label><textarea name="self_message" maxlength="500" placeholder="寫下第一個浮現的念頭就好。"></textarea></div>
+<div class="field"><label>最近的你，正在經歷什麼？</label><textarea name="current_state" maxlength="800" placeholder="可以是一種情緒、一件事情，或一段說不清楚的感受。"></textarea></div>
+<div class="field"><label>你希望這一道光，陪你走向什麼？</label><textarea name="wished_direction" maxlength="500" placeholder="例如：更相信自己、安定、勇敢做選擇……"></textarea></div>
+<div class="field"><label>Instagram 帳號</label><input name="instagram" maxlength="80" placeholder="選填，方便後續聯繫"></div></div></section>
+<section class="section"><h2>寄送資料</h2><p class="desc">以下資料只用於本次生日小卡的製作、聯繫與寄送。</p><div class="grid">
+<div class="two grid"><div class="field"><label>收件人姓名 <span class="req">*</span></label><input name="recipient_name" required maxlength="60"></div><div class="field"><label>聯絡手機 <span class="req">*</span></label><input name="phone" required maxlength="30" inputmode="tel"></div></div>
+<div class="two grid"><div class="field"><label>郵遞區號</label><input name="postal_code" maxlength="10" inputmode="numeric"></div><div class="field"><label>完整寄送地址 <span class="req">*</span></label><input name="shipping_address" required maxlength="200"></div></div>
+<div class="field"><label>想補充給拾光所的話</label><textarea name="notes" maxlength="500" placeholder="選填"></textarea></div>
+<div class="note-card">送出後，我會再與你確認付款與製作安排。生日拾光為客製內容，請送出前再次確認姓名、生日與寄送資料。</div>
+<label class="check"><input type="checkbox" name="consent_privacy" required><span>我同意拾光所為本次生日小卡的製作、聯繫與寄送使用以上資料。 <span class="req">*</span></span></label>
+<label class="check"><input type="checkbox" name="consent_custom_product" required><span>我了解此為依個人資料製作的客製商品，並確認填寫內容正確。 <span class="req">*</span></span></label>
+<button class="submit" type="submit">送出我的生日拾光</button><div class="micro">每月僅收 10 份；額滿後表單將停止收件。</div><div id="ok" class="msg ok">資料已收到 ♡<br>謝謝你，把新一歲的一小段故事交給拾光所。請留意後續聯繫。</div><div id="err" class="msg err"></div></div></section>
+</form><footer class="footer"><b>✦ 一份拾光 · by 拾光所</b><br>願你在自己的路上，一直拾得到屬於你的光。</footer>
+</main></div>
+<script>
+const endpoint='https://tgfxrbghzzttqbpfwypw.supabase.co/functions/v1/birthday-light';
+const f=document.getElementById('birthdayForm'),btn=f.querySelector('.submit'),ok=document.getElementById('ok'),err=document.getElementById('err');
+f.addEventListener('submit',async(e)=>{e.preventDefault();ok.style.display='none';err.style.display='none';btn.disabled=true;btn.textContent='送出中…';const fd=new FormData(f);const data=Object.fromEntries(fd.entries());data.consent_privacy=fd.has('consent_privacy');data.consent_custom_product=fd.has('consent_custom_product');data.turning_age=data.turning_age?Number(data.turning_age):null;try{const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json();if(!r.ok)throw new Error(j.error||'送出失敗');f.reset();ok.style.display='block';ok.scrollIntoView({behavior:'smooth',block:'center'});}catch(x){err.textContent=x.message==='monthly_limit_reached'?'本月 10 份生日拾光已額滿，謝謝你來到這裡。':'送出時發生問題，請稍後再試。';err.style.display='block';}finally{btn.disabled=false;btn.textContent='送出我的生日拾光';}});
+</script></body></html>
