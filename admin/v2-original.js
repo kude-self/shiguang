@@ -1,1 +1,1 @@
-PLACEHOLDER
+window.__V2_SPLIT_TEST__=true;
