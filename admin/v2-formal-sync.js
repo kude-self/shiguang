@@ -1,4 +1,4 @@
-/* v304 formal Supabase data adapter: journey_records + along_the_way_entries + direct birthday columns */
+/* v310 formal Supabase data adapter: journey_records + along_the_way_entries + birthday service_date */
 function formalJourneyContainerId(j){
   return j.__journeyId || j.shiguangJourneyId || j.companionJourneyId || j.id;
 }
@@ -71,6 +71,7 @@ function birthdayRow(b){
   const map={'待確認':'new','已確認':'confirmed','待製作':'paid','製作中':'producing','待寄出':'producing','已寄出':'shipped','已取消':'cancelled'};
   return {
     id:b.id,status:map[b.status]||(b.status||'new'),display_name:b.name||b.cardName||'',birthday:b.birthday||null,
+    service_date:b.serviceDate||b.service_date||null,
     current_state:b.recentState||'',self_message:b.recentPhrase||'',recipient_name:b.recipient||'',phone:b.phone||'',
     postal_code:b.postalCode||null,shipping_address:b.address||'',instagram:b.instagram||null,payment_last5:b.paymentLast5||'',
     photo_path:b.photoPath||null,time_code:b.timeCode||null,sensed_color:b.lightColor||null,
@@ -107,6 +108,6 @@ async function loadCloud(){
     CLOUD.journeys=js.map(r=>{let x={};try{x=JSON.parse(r.note||'{}')}catch(e){};return {...x,id:r.id,__journeyId:r.id,travelerId:r.traveler_id,journeyType:r.journey_type,date:x.date||r.start_date,status:r.status,createdAt:x.createdAt||new Date(r.created_at).getTime()}});
   }
   CLOUD.along=als.map(r=>({id:r.id,shiguangJourneyId:r.journey_id,travelerId:r.traveler_id,date:r.entry_date,content:r.content||'',note:r.companion_note||'',bringBack:r.bring_to_next?'帶回下次':'再觀察',includeInLifeTrack:!!r.include_in_life_track,createdAt:new Date(r.created_at).getTime()}));
-  CLOUD.birthday=bs.map(r=>{let x={};try{x=JSON.parse(r.notes||'{}')}catch(e){};const st={'new':'待確認','confirmed':'已確認','paid':'待製作','producing':'製作中','shipped':'已寄出','cancelled':'已取消'}[r.status]||'待確認';return {...x,id:r.id,name:x.name||r.display_name,birthday:r.birthday,recentState:x.recentState||r.current_state,recentPhrase:x.recentPhrase||r.self_message,recipient:x.recipient||r.recipient_name,phone:r.phone,postalCode:x.postalCode||r.postal_code,address:x.address||r.shipping_address,instagram:x.instagram||r.instagram,paymentLast5:x.paymentLast5||r.payment_last5,photoPath:x.photoPath||r.photo_path,timeCode:x.timeCode||r.time_code,lightColor:x.lightColor||r.sensed_color,lightMessage:x.lightMessage||r.sensed_message,cardKeyword:x.cardKeyword||r.card_keyword,cardMessage:x.cardMessage||r.card_message,productionNote:x.productionNote||r.production_note,shippedAt:x.shippedAt||r.shipped_at,status:st,createdAt:x.createdAt||new Date(r.created_at).getTime()}});
+  CLOUD.birthday=bs.map(r=>{let x={};try{x=JSON.parse(r.notes||'{}')}catch(e){};const st={'new':'待確認','confirmed':'已確認','paid':'待製作','producing':'製作中','shipped':'已寄出','cancelled':'已取消'}[r.status]||'待確認';return {...x,id:r.id,name:x.name||r.display_name,birthday:r.birthday,serviceDate:r.service_date||x.serviceDate||x.service_date||null,recentState:x.recentState||r.current_state,recentPhrase:x.recentPhrase||r.self_message,recipient:x.recipient||r.recipient_name,phone:r.phone,postalCode:x.postalCode||r.postal_code,address:x.address||r.shipping_address,instagram:x.instagram||r.instagram,paymentLast5:x.paymentLast5||r.payment_last5,photoPath:x.photoPath||r.photo_path,timeCode:x.timeCode||r.time_code,lightColor:x.lightColor||r.sensed_color,lightMessage:x.lightMessage||r.sensed_message,cardKeyword:x.cardKeyword||r.card_keyword,cardMessage:x.cardMessage||r.card_message,productionNote:x.productionNote||r.production_note,shippedAt:x.shippedAt||r.shipped_at,status:st,createdAt:x.createdAt||new Date(r.created_at).getTime()}});
   CLOUD.bookings=bks;CLOUD.income=incs;
 }
