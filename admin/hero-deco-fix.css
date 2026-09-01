@@ -1,0 +1,2 @@
+/* v306 hero decoration: remove oversized crescent from dashboard hero */
+.hero .hero-deco{display:none!important;}
