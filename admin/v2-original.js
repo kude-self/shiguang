@@ -1,2 +1,1 @@
-window.__V2_SPLIT_TEST__=true;
-/* Full V2 source upload pending connector payload-safe transfer. Production admin remains unchanged. */
+window.__V2_FULL_SOURCE_PENDING_UPLOAD__=true;
