@@ -1,0 +1,16 @@
+/* v311 cute booking calendar visual layer only */
+.bkcal-week,.bkcal-grid{gap:7px!important}
+.bkcal-week{padding:0 4px 4px;font-size:12px!important;font-weight:700;color:#9b8d88!important;letter-spacing:.04em}
+.bkcal-day{position:relative;min-height:96px!important;padding:8px!important;border:1px solid rgba(185,159,144,.16)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(255,250,245,.88))!important;box-shadow:0 4px 12px rgba(119,93,78,.05);transition:.18s ease}
+.bkcal-day:not(.empty-day):hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(119,93,78,.08)}
+.bkcal-day.empty-day{background:transparent!important;border-color:transparent!important;box-shadow:none}
+.bkcal-num{width:25px;height:25px;display:flex;align-items:center;justify-content:center;margin:0 0 7px!important;border-radius:50%;font-size:12px!important;font-weight:800!important;color:#70645e;background:#fff7ef;box-shadow:inset 0 0 0 1px rgba(189,161,143,.10)}
+.bkcal-event{position:relative;border-radius:11px!important;padding:6px 7px 6px 10px!important;margin-top:5px!important;font-size:10px!important;line-height:1.4!important;border:1px solid rgba(255,255,255,.7);box-shadow:0 3px 8px rgba(104,82,71,.05)}
+.bkcal-event:before{content:'✦';position:absolute;left:3px;top:5px;font-size:7px;opacity:.55}
+.bkcal-event strong{font-weight:800;margin-left:4px}
+.bkcal-event span{margin-left:4px;opacity:.75}
+.bkcal-event.journey{background:linear-gradient(135deg,#eef5ea,#f7f3e9)!important;color:#5d6956}
+.bkcal-event.birthday{background:linear-gradient(135deg,#fae9ec,#f7eee5)!important;color:#7d5d62}
+.bkcal-event.birthday:before{content:'♡'}
+.paper-card:has(.bkcal-grid){background:linear-gradient(150deg,#fffdf9 0%,#fffaf6 55%,#f8fbf6 100%)!important;border:1px solid rgba(190,163,147,.13)!important;border-radius:24px!important;box-shadow:0 10px 28px rgba(117,91,77,.07)!important}
+@media(max-width:600px){.bkcal-week,.bkcal-grid{gap:4px!important}.bkcal-day{min-height:76px!important;padding:5px!important;border-radius:13px!important}.bkcal-num{width:21px;height:21px;font-size:11px!important;margin-bottom:4px!important}.bkcal-event{padding:5px!important;border-radius:8px!important;font-size:9px!important}.bkcal-event:before{display:none}.bkcal-event strong{margin-left:0}.bkcal-event span{display:none!important}}
