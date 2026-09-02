@@ -1,4 +1,4 @@
-/* v319 birthday: DB-authoritative save + complete status counts */
+/* v323 birthday: DB-authoritative save + complete status counts + card image paths */
 (function(){
   function statusToDb(s){return ({'待確認':'new','已確認':'confirmed','待製作':'paid','製作中':'producing','待寄出':'producing','已寄出':'shipped','已取消':'cancelled'})[s]||s||'new'}
   function dbToStatus(s){return ({new:'待確認',confirmed:'已確認',paid:'待製作',producing:'製作中',shipped:'已寄出',cancelled:'已取消'})[s]||'待確認'}
@@ -10,7 +10,7 @@
     var parts=parseHash();if(parts[0]!=='birthday-edit')return;
     e.preventDefault();e.stopImmediatePropagation();
     var id=parts[1],old=getB().find(function(x){return x.id===id});if(!old){alert('找不到這筆生日拾光資料');return}
-    var fd=new FormData(form),fields=['status','orderDate','confirmedDate','name','cardName','birthday','phone','lineName','paymentLast5','paymentStatus','recipient','address','photoData','recentState','recentPhrase','lightColor','lightDetail','lightFirst','lightRaw','lightEnergy','lightMessage','lightCore','deckName','cardDrawn','cardKeyword','cardFeeling','cardWithLight','cardMessage','card1Copy','card2Copy','card1Front','card1Back','card2Front','card2Back','copyStatus','cardStatus','completedDate','shipDate','shippingInfo','feedback','feedbackConsent','privateFeeling','privateUncertain','privateAfter'];
+    var fd=new FormData(form),fields=['status','orderDate','confirmedDate','name','cardName','birthday','phone','lineName','paymentLast5','paymentStatus','recipient','address','photoData','recentState','recentPhrase','lightColor','lightDetail','lightFirst','lightRaw','lightEnergy','lightMessage','lightCore','deckName','cardDrawn','cardKeyword','cardFeeling','cardWithLight','cardMessage','card1FrontImage','card1BackImage','card2FrontImage','card2BackImage','cardStatus','completedDate','shipDate','shippingInfo','feedback','feedbackConsent','privateFeeling','privateUncertain','privateAfter'];
     var data={};fields.forEach(function(k){data[k]=clean(fd.get(k))});if(!data.name&&!data.cardName){toast('請至少填寫旅人姓名或卡片稱呼');return}
     var next=Object.assign({},old,data,{timeCode:old.timeCode||null,serviceDate:old.serviceDate||old.service_date||null,updatedAt:Date.now()});
     var btn=form.querySelector('[type=submit]');if(btn){btn.disabled=true;btn.textContent='儲存中…'}
@@ -19,6 +19,6 @@
       if(!r.ok)throw new Error(await r.text());var rows=await r.json();if(!rows.length)throw new Error('更新結果為 0 筆');
       await loadCloud();var dbItem=getB().find(function(x){return x.id===id});if(!dbItem||dbItem.status!==dbToStatus(rows[0].status))throw new Error('儲存後狀態驗證不一致');
       toast('已同步儲存');location.hash='#/birthday';render();
-    }catch(err){console.error('birthday v319 save',err);alert('生日拾光同步失敗：'+(err&&err.message?err.message:'未知錯誤'));if(btn){btn.disabled=false;btn.textContent='儲存生日拾光'}}
+    }catch(err){console.error('birthday v323 save',err);alert('生日拾光同步失敗：'+(err&&err.message?err.message:'未知錯誤'));if(btn){btn.disabled=false;btn.textContent='儲存生日拾光'}}
   },true);
 })();
