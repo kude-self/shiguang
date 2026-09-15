@@ -1,0 +1,42 @@
+name: Build iOS home icons
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/icon-*.svg'
+      - '.github/workflows/build-ios-icons.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+      - name: Build icons and metadata
+        run: |
+          rsvg-convert -w 180 -h 180 assets/icon-birthday.svg -o birthday/apple-touch-icon.png
+          rsvg-convert -w 180 -h 180 assets/icon-booking.svg -o booking/apple-touch-icon.png
+          rsvg-convert -w 180 -h 180 assets/icon-admin.svg -o admin/apple-touch-icon.png
+          rsvg-convert -w 180 -h 180 assets/icon-keyword.svg -o keyword-draw/apple-touch-icon.png
+          rsvg-convert -w 180 -h 180 assets/icon-my-space.svg -o my-space/apple-touch-icon.png
+          python3 - <<'PY'
+          from pathlib import Path
+          for folder in ['birthday','booking','admin','keyword-draw','my-space']:
+              p=Path(folder)/'index.html'; s=p.read_text()
+              tag='<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=1">'
+              if 'rel="apple-touch-icon"' not in s: s=s.replace('</head>',tag+'\n</head>',1)
+              p.write_text(s)
+          PY
+      - name: Verify
+        run: |
+          for d in birthday booking admin keyword-draw my-space; do test -s "$d/apple-touch-icon.png"; grep -q 'apple-touch-icon' "$d/index.html"; done
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add birthday booking admin keyword-draw my-space
+          git diff --cached --quiet && exit 0
+          git commit -m 'Build iPhone home screen icons [skip ci]'
+          git push
