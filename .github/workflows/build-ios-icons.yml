@@ -20,7 +20,7 @@ jobs:
           rsvg-convert -w 180 -h 180 assets/icon-booking.svg -o booking/apple-touch-icon.png
           rsvg-convert -w 180 -h 180 assets/icon-admin.svg -o admin/apple-touch-icon.png
           rsvg-convert -w 180 -h 180 assets/icon-keyword.svg -o keyword-draw/apple-touch-icon.png
-          cp assets/icons/shiguang-home.png my-space/apple-touch-icon.png
+          rsvg-convert -w 180 -h 180 assets/icon-my-space.svg -o my-space/apple-touch-icon.png
           rsvg-convert -w 180 -h 180 assets/icon-daily-life.svg -o daily-life/apple-touch-icon.png
           rsvg-convert -w 180 -h 180 assets/icon-shift-scheduler.svg -o shift-scheduler/apple-touch-icon.png
           cp shift-scheduler/apple-touch-icon.png shift-scheduler-cloud/apple-touch-icon.png
