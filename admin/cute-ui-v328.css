@@ -37,3 +37,13 @@ body{background:linear-gradient(165deg,#fff9f6 0%,#fffaf2 52%,#f8f9f5 100%)!impo
 .paper-card,.form-card,.detail-head{border-radius:22px!important;box-shadow:0 5px 18px #b28b8514!important}
 }
 @media(max-width:430px){.main{padding-left:15px!important;padding-right:15px!important}.toolbar{gap:9px!important}.toolbar select.sel{width:100%!important;max-width:100%!important}.mnav-bottom a{font-size:10px!important}}
+
+/* v330：總覽不再重複完整旅程卡片 */
+.sg-overview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 23px}
+.sg-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-decoration:none;color:#7b6367;background:#fff;border:1px solid #f2e0e1;border-radius:19px;padding:16px 5px;box-shadow:0 5px 15px #b98e9312}
+.sg-stat:nth-child(2){background:#f8fbf5;border-color:#dce9d9}.sg-stat:nth-child(3){background:#fcf9ff;border-color:#ebe1f0}
+.sg-stat-icon{font-size:20px;color:#c48c9c}.sg-stat strong{font-size:26px;line-height:1.2;color:#654e58}.sg-stat span:last-child{font-size:11px;white-space:nowrap;color:#95888a}
+.sg-overview-section{margin:18px 0 24px}.sg-overview-section .section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px}.sg-overview-section .section-title h3{font-size:17px;margin:0;color:#69585a}.sg-overview-section .more{font-size:12px;color:#bc8292;text-decoration:none;white-space:nowrap}
+.sg-overview-list{border:1px solid #f1e2df;background:#fffefa;border-radius:19px;padding:0 15px}.sg-overview-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f3eae6;text-decoration:none;color:#645658}.sg-overview-item:last-child{border:0}.sg-overview-item div{flex:1;min-width:0}.sg-overview-item b{display:block;font-size:14px}.sg-overview-item small{display:block;margin-top:4px;font-size:12px;color:#9c9090}.sg-overview-dot{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:#fcecef;color:#c78b9b;flex:none}.sg-chevron{font-size:23px;color:#caa4ab}
+.sg-empty{padding:22px 15px;text-align:center;background:#fffdfb;border:1px dashed #ecdcd9;border-radius:17px;color:#9d8d8c;font-size:13px}
+.sg-quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:25px 0}.sg-quick-actions a{text-decoration:none;text-align:center;border-radius:15px;background:#f8e9eb;color:#a16f7a;padding:13px 5px;font-size:13px;font-weight:700}.sg-quick-actions a:nth-child(2){background:#edf5e9;color:#738b74}
