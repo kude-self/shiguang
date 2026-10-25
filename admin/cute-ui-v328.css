@@ -1,0 +1,39 @@
+/* 拾光所 v328｜奶油糖果色・輕盈可愛後台，保留清楚閱讀與點擊 */
+:root{--pink:#d28e99;--soft-pink:#e8b7bf;--light-pink:#fff0f2;--sage:#a8c7aa;--light-sage:#f2f8ef;--line:#f0dedc;--paper:#fffefd;--cream:#fff8ed}
+body{background:#fff9f6}
+@media(max-width:880px){
+body{background:linear-gradient(165deg,#fff9f6 0%,#fffaf2 52%,#f8f9f5 100%)!important}
+.main{padding:17px 16px calc(98px + env(safe-area-inset-bottom))!important}
+.mnav-top{background:#fffcf9!important;border-bottom:1px solid #f3e3df!important;box-shadow:0 3px 14px #cba9a214!important}
+.mnav-bottom{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;justify-content:stretch!important;align-items:stretch!important;gap:2px!important;padding:8px 7px calc(8px + env(safe-area-inset-bottom))!important;overflow:hidden!important;background:#fffdfbeF!important;border-top:1px solid #f1dcd8!important;box-shadow:0 -5px 24px #a77b7a15!important}
+.mnav-bottom a{min-width:0!important;max-width:none!important;width:100%!important;flex:initial!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:5px!important;padding:8px 1px!important;border-radius:17px!important;font-size:11px!important;line-height:1.3!important;white-space:nowrap!important;color:#9d928e!important}
+.mnav-bottom a svg{width:21px!important;height:21px!important;stroke-width:1.9}
+.mnav-bottom a.active{background:#fff0f2!important;color:#bc7c88!important;box-shadow:inset 0 0 0 1px #f5dce1!important}
+.page-head{padding:5px 4px 8px!important;margin-bottom:12px!important}
+.page-title{font-size:24px!important;color:#604e50!important;letter-spacing:.03em}
+.page-desc{color:#958785!important;line-height:1.65!important}
+.toolbar{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-bottom:16px!important}
+.toolbar .search-wrap{grid-column:1/-1!important}
+.toolbar select.sel,.toolbar .search-wrap{width:100%!important;max-width:100%!important;min-width:0!important}
+.search-wrap input,select.sel{width:100%!important;max-width:100%!important;min-width:0!important;border:1.5px solid #ead8d6!important;border-radius:15px!important;background:#fff!important;box-shadow:none!important;font-size:13px!important}
+.search-wrap input{font-size:15px!important}
+.t-grid{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+.t-card,.t-card:nth-child(even){position:relative!important;min-height:0!important;padding:17px 18px 15px!important;border:1.5px solid #f1d8dc!important;border-radius:22px!important;background:#fffefe!important;box-shadow:0 5px 17px #ad83831a!important;gap:12px!important}
+.t-card:nth-child(3n+2){border-color:#dbe8d6!important;background:#fefffc!important}
+.t-card:nth-child(3n){border-color:#e9dcf0!important;background:#fffefe!important}
+.t-card:after{content:'✦';position:absolute;right:16px;top:15px;color:#e4b2bc;font-size:13px}
+.t-card:nth-child(3n+2):after{content:'✿';color:#b4d0ad}
+.t-card:nth-child(3n):after{content:'✧';color:#cbb5df}
+.t-card .row1{gap:12px!important}
+.t-card .avatar{width:45px!important;height:45px!important;background:#e8b9bf!important;color:#7c535c!important;font-size:16px!important;border-radius:16px!important}
+.t-card:nth-child(3n+2) .avatar{background:#dbead6!important;color:#56735c!important}
+.t-card:nth-child(3n) .avatar{background:#eee1f4!important;color:#7e628d!important}
+.t-card .name{font-size:17px!important;color:#5a4d4d!important;letter-spacing:.02em}
+.t-card .theme{margin-top:4px!important;color:#9b8388!important;font-weight:500!important}
+.t-card .type-badge{display:inline-block!important;padding:3px 10px!important;border:1px solid #e8d5d8!important;background:#fff7f8!important;color:#aa7b87!important;border-radius:99px!important;font-size:11px!important}
+.t-card .meta{padding-top:10px!important;font-size:11.5px!important;color:#9b9290!important;border-color:#f2e9e6!important;gap:6px!important}
+.btn-primary{background:linear-gradient(110deg,#df9da8,#c98b9b)!important;box-shadow:0 5px 13px #b784901c!important}
+.btn{border-radius:15px!important}
+.paper-card,.form-card,.detail-head{border-radius:22px!important;box-shadow:0 5px 18px #b28b8514!important}
+}
+@media(max-width:430px){.main{padding-left:15px!important;padding-right:15px!important}.toolbar{gap:9px!important}.toolbar select.sel{width:100%!important;max-width:100%!important}.mnav-bottom a{font-size:10px!important}}
