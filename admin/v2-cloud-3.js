@@ -1,43 +1,22 @@
-/* ============ 儀表板 ============ */
 function pageDashboard(){
-  const travelers=getT(), journeys=getJ();
-  const now=new Date();
-  const ym=now.toISOString().slice(0,7);
-  const thisMonth=journeys.filter(j=>(j.date||'').startsWith(ym)).length;
-  const tc=typeCounts(journeys);
-  const weekAgo=new Date(Date.now()-7*86400000).toISOString().slice(0,10);
-  const recentTravelerIds=new Set(journeys.filter(j=>j.date>=weekAgo).map(j=>j.travelerId));
-  const s=getSeason();
-  const pendingBookings=(CLOUD.bookings||[]).filter(x=>x.status==='pending').length;
-  const effectiveIncome=(CLOUD.income||[]).filter(x=>!['pending','cancelled'].includes(x.status)).reduce((n,x)=>n+(Number(x.amount)||0)+(Number(x.shipping)||0),0);
-
-  const recent=[...journeys].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.createdAt-a.createdAt)).slice(0,3);
-
-  return `
-    <div class="hero">
-      <div class="hero-deco">${ICON.moon}</div>
-      <h2>每一段相遇，都值得被好好記下。</h2>
-      <p>這裡收著每一位旅人走過的路，還有你在旅程裡看見的光。今天是${s.name}天——${s.desc}。</p>
-    </div>
-
-    <div class="section-title"><h3>三段旅程</h3><a class="more" href="#/programs">查看完整旅程設計 →</a></div>
-    ${programCardsHtml(true)}
-
-    <div class="stat-grid">
-      <div class="stat-card"><div class="icon ic-a">${ICON.people}</div><div class="num">${travelers.length}</div><div class="lbl">旅人總數</div></div>
-      <div class="stat-card"><div class="icon ic-b">${ICON.path}</div><div class="num">${journeys.length}</div><div class="lbl">累計旅程</div></div>
-      <div class="stat-card"><div class="icon ic-a">${ICON.book}</div><div class="num">${tc['初遇']}</div><div class="lbl">初遇紀錄</div></div>
-      <div class="stat-card"><div class="icon ic-b">${ICON.moon}</div><div class="num">${tc['拾光']}</div><div class="lbl">拾光紀錄</div></div>
-      <div class="stat-card"><div class="icon ic-c">${ICON.compass}</div><div class="num">${tc['同行']}</div><div class="lbl">同行紀錄</div></div>
-      <div class="stat-card"><div class="icon ic-d">${ICON.dash}</div><div class="num">${thisMonth}</div><div class="lbl">本月旅程</div></div>
-      <div class="stat-card"><div class="icon ic-a">${ICON.book}</div><div class="num">${pendingBookings}</div><div class="lbl">待確認預約</div></div>
-      <div class="stat-card"><div class="icon ic-b">${ICON.dash}</div><div class="num">$${money(effectiveIncome)}</div><div class="lbl">有效收入</div></div>
-    </div>
-
-    <div class="section-title"><h3>最近的旅程</h3>${journeys.length?'<a class="more" href="#/travelers">查看全部旅人 →</a>':''}</div>
-    ${recent.length?`<div class="journey-list">${recent.map(j=>journeyCard(j)).join('')}</div>`:
-      `<div class="empty">${ICON.book}<p>還沒有任何旅程紀錄。<br>從新增第一位旅人開始吧。</p><a href="#/traveler-new" class="btn btn-primary">${ICON.add} 新增旅人</a></div>`}
-  `;
+ const travelers=getT(),journeys=getJ(),bookings=CLOUD.bookings||[];
+ const pending=bookings.filter(x=>x.status==='pending');
+ const recent=[...journeys].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,3);
+ const upcoming=bookings.filter(x=>x.status!=='cancelled'&&x.booking_date&&x.booking_date>=new Date().toLocaleDateString('sv-SE')).sort((a,b)=>(a.booking_date||'').localeCompare(b.booking_date||'')||(a.booking_time||'').localeCompare(b.booking_time||'')).slice(0,3);
+ return `
+ <div class="page-head"><div class="eyebrow">SHIGUANG STUDIO · OVERVIEW</div><h1 class="page-title">拾光所・今日總覽 ✿</h1><p class="page-desc">只看需要留意的事情，完整內容到各分類查看。</p></div>
+ <div class="sg-overview-stats">
+ <a href="#/bookings" class="sg-stat"><span class="sg-stat-icon">✉</span><strong>${pending.length}</strong><span>待確認預約</span></a>
+ <a href="#/travelers" class="sg-stat"><span class="sg-stat-icon">♡</span><strong>${travelers.length}</strong><span>旅人總數</span></a>
+ <a href="#/more" class="sg-stat"><span class="sg-stat-icon">✦</span><strong>${journeys.length}</strong><span>旅程紀錄</span></a>
+ </div>
+ <section class="sg-overview-section"><div class="section-title"><h3>接下來的預約</h3><a class="more" href="#/bookings">查看全部 →</a></div>
+ ${upcoming.length?'<div class="sg-overview-list">'+upcoming.map(x=>'<div class="sg-overview-item"><span class="sg-overview-dot">✿</span><div><b>'+esc(x.traveler_name||'旅人')+'</b><small>'+esc(x.journey||'服務')+'・'+esc(x.booking_date||'')+' '+esc(x.booking_time||'')+'</small></div></div>').join('')+'</div>':'<div class="sg-empty">目前沒有即將到來的預約 ♡</div>'}
+ </section>
+ <section class="sg-overview-section"><div class="section-title"><h3>最近留下的紀錄</h3><a class="more" href="#/travelers">旅人紀錄 →</a></div>
+ ${recent.length?'<div class="sg-overview-list">'+recent.map(j=>{const t=travelers.find(x=>x.id===j.travelerId);return '<a class="sg-overview-item" href="#/traveler/'+encodeURIComponent(j.travelerId||'')+'"><span class="sg-overview-dot">✧</span><div><b>'+esc(t?.name||'旅人')+'</b><small>'+esc(typeOf(j))+'・'+esc(j.date||'')+'</small></div><span class="sg-chevron">›</span></a>'}).join('')+'</div>':'<div class="sg-empty">還沒有旅程紀錄，從旅人紀錄開始就好。</div>'}
+ </section>
+ <div class="sg-quick-actions"><a href="#/travelers">♡ 旅人紀錄</a><a href="#/settings">⚙ 服務設定</a></div>`;
 }
 
 function initialProductionText(j,t){
