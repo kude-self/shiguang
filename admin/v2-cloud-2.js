@@ -21,20 +21,12 @@ function showLogin(msg=''){
 }
 
 function navHtml(active){
-  const items=[
-    ['dashboard','總覽','dash'],
-    ['programs','三段旅程','path'],
-    ['birthday','生日拾光','moon'],
-    ['bookings','預約管理','book'],
-    ['travelers','旅人清單','list'],
-    ['traveler-new','新增旅人','add'],
-    ['start','開啟旅程','compass'],
-    ['income','副業收入','dash'],
-    ['backup','備份','backup'],
-  ];
-  return items.map(([key,label,icon])=>
-    `<a href="#/${key}" class="${active===key?'active':''}">${ICON[icon]}<span>${label}</span></a>`
-  ).join('');
+ const items=[['dashboard','總覽','dash'],['settings','服務設定','compass'],['travelers','旅人紀錄','people'],['bookings','預約管理','book'],['more','更多','list']];
+ return items.map(([key,label,icon])=>'<a href="'+(key==='settings'?'./light-healing.html':'#/'+key)+'" class="'+(active===key?'active':'')+'">'+(ICON[icon]||ICON.list)+'<span>'+label+'</span></a>').join('');
+}
+function pageMore(){
+ const items=[['programs','三段旅程','查看初遇、拾光、同行的原有紀錄'],['birthday','生日拾光','生日拾光訂單與製作'],['traveler-new','新增旅人','建立新的旅人資料'],['start','開啟旅程','新增初遇、拾光、同行紀錄'],['income','副業收入','查看收入與明細'],['backup','資料備份','匯出或匯入備份']];
+ return '<div class="page-head"><div class="eyebrow">More</div><h1 class="page-title">更多功能</h1><p class="page-desc">常用功能留在底部，其他功能集中在這裡。</p></div><div class="journey-list">'+items.map(([key,title,desc])=>'<a href="#/'+key+'" class="paper-card" style="display:block;text-decoration:none;color:inherit;margin-bottom:12px"><div style="font-weight:700;font-size:17px">'+title+'</div><div class="page-desc">'+desc+'</div></a>').join('')+'</div>';
 }
 
 function render(){
@@ -54,7 +46,9 @@ function render(){
   else if(page==='traveler-new') activeKey='traveler-new';
   else if(page==='start'||page==='journey') activeKey='start';
   else if(page==='income') activeKey='income';
-  else if(page==='backup') activeKey='backup';
+  else if(page==='backup') activeKey='more';
+  else if(page==='more') activeKey='more';
+  else if(['programs','program','birthday','birthday-new','birthday-edit','start','journey','journey-new','journey-edit','income','traveler-new','traveler-edit'].includes(page)) activeKey='more';
 
   const shell=`
     <div class="mnav-top">
@@ -88,6 +82,7 @@ function render(){
   else if(page==='journey-edit') main.innerHTML=pageJourneyForm(null,parts[1]);
   else if(page==='income') main.innerHTML=pageIncome();
   else if(page==='backup') main.innerHTML=pageBackup();
+  else if(page==='more') main.innerHTML=pageMore();
   else main.innerHTML=pageDashboard();
 
   bindPageEvents(page);
