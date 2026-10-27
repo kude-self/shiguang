@@ -4,13 +4,14 @@
   function actualServices(t){
     var out=[],js=journeysOf(t.id);
     ['初遇','拾光','同行'].forEach(function(x){if(js.some(function(j){return typeOf(j)===x}))out.push(x)});
-    if(birthdayOrdersOf(t.id).length)out.push('生日拾光');
+    if(birthdayOrdersOf(t.id).length||t.journeyType==='生日拾光')out.push('生日拾光');
+    if(t.journeyType==='光之療癒'||(CLOUD.lightRecords||[]).some(function(r){return String(r.traveler_id)===String(t.id)})||(CLOUD.bookings||[]).some(function(b){return b.journey==='光之療癒'&&String(b.traveler_id)===String(t.id)}))out.push('光之療癒');
     return out;
   }
   function badges(t){
     var s=actualServices(t);
     if(!s.length)return '<span class="hint">尚無服務紀錄</span>';
-    return s.map(function(x){return '<span class="type-badge '+(x==='生日拾光'?'type-light':'')+'">'+esc(x)+'</span>'}).join(' ');
+    return s.map(function(x){return '<span class="type-badge '+(['生日拾光','光之療癒'].includes(x)?'type-light':'')+'">'+esc(x)+'</span>'}).join(' ');
   }
   window.renderTravelerList=function(){
     var q=(document.getElementById('t-search')&&document.getElementById('t-search').value||'').trim().toLowerCase();
@@ -19,7 +20,7 @@
     var list=getT();
     if(q)list=list.filter(function(t){return (t.name||'').toLowerCase().includes(q)||(t.theme||'').toLowerCase().includes(q)});
     if(type!=='all')list=list.filter(function(t){return actualServices(t).indexOf(type)>=0});
-    var withMeta=list.map(function(t){var js=journeysOf(t.id),bds=birthdayOrdersOf(t.id),dates=js.map(function(j){return j.date||''}).concat(bds.map(function(b){return b.serviceDate||b.service_date||b.orderDate||''})).filter(Boolean).sort().reverse();return {t:t,count:js.length+bds.length,last:dates[0]||t.firstMet||''}});
+    var withMeta=list.map(function(t){var js=journeysOf(t.id),bds=birthdayOrdersOf(t.id),light=(CLOUD.lightRecords||[]).filter(function(r){return String(r.traveler_id)===String(t.id)}),dates=js.map(function(j){return j.date||''}).concat(bds.map(function(b){return b.serviceDate||b.service_date||b.orderDate||''}),light.map(function(r){return r.session_date||''})).filter(Boolean).sort().reverse();return {t:t,count:js.length+bds.length+light.length,last:dates[0]||t.firstMet||''}});
     if(sort==='name')withMeta.sort(function(a,b){return (a.t.name||'').localeCompare(b.t.name||'','zh-Hant')});
     else if(sort==='count')withMeta.sort(function(a,b){return b.count-a.count});
     else withMeta.sort(function(a,b){return (b.last||'').localeCompare(a.last||'')});
@@ -29,5 +30,5 @@
     el.querySelectorAll('[data-goto]').forEach(function(c){c.addEventListener('click',function(){location.hash='#/traveler/'+c.dataset.goto})});
   };
   var oldPage=window.pageTravelerList;
-  if(typeof oldPage==='function')window.pageTravelerList=function(){var html=oldPage();html=html.replace('<option value="同行">同行</option>','<option value="同行">同行</option><option value="生日拾光">生日拾光</option>');return html};
+  if(typeof oldPage==='function')window.pageTravelerList=function(){var html=oldPage();html=html.replace('<option value="同行">同行</option>','<option value="同行">同行</option><option value="生日拾光">生日拾光</option><option value="光之療癒">光之療癒</option>');return html};
 })();
