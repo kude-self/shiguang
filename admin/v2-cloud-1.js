@@ -76,11 +76,13 @@ function alongOfJourney(journeyId){ return getA().filter(a=>a.shiguangJourneyId=
 const JOURNEY_TYPES={
   '初遇':{cls:'type-first',desc:'一次相遇'},
   '拾光':{cls:'type-light',desc:'一段專屬旅程'},
-  '同行':{cls:'type-long',desc:'長期陪伴'}
+  '同行':{cls:'type-long',desc:'長期陪伴'},
+  '光之療癒':{cls:'type-light',desc:'七脈輪與植物訊息'},
+  '生日拾光':{cls:'type-light',desc:'生日拾光卡片'}
 };
 function typeOf(obj){ return (obj&&obj.journeyType&&JOURNEY_TYPES[obj.journeyType])?obj.journeyType:'初遇'; }
 function typeBadge(type){ const t=JOURNEY_TYPES[type]||JOURNEY_TYPES['初遇']; return `<span class="type-badge ${t.cls}">${type}</span>`; }
-function typeCounts(js){ const out={'初遇':0,'拾光':0,'同行':0}; js.forEach(j=>out[typeOf(j)]++); return out; }
+function typeCounts(js){ const out={'初遇':0,'拾光':0,'同行':0,'光之療癒':0,'生日拾光':0}; js.forEach(j=>{const k=typeOf(j);out[k]=(out[k]||0)+1}); return out; }
 
 /* ============ 季節裝飾 ============ */
 function getSeason(){
