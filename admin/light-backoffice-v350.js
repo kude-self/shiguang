@@ -21,7 +21,7 @@
       h=h.replace(/<input type="hidden" name="journeyType"[^>]*>/, '');
       if(!h.includes('name="journeyType"')) h=h.replace('</form>',serviceSelect(t.journeyType||'初遇')+'</form>');
     }else{
-      h=h.replace(/<div class="field">\s*<label>目前旅程類型<\/label>[\s\S]*?<\/select>\s*<\/div>/,serviceSelect('光之療癒'));
+      h=h.replace(/<div class="field">\s*<label>目前旅程類型<\/label>[\s\S]*?<\/select>\s*<\/div>/,serviceSelect((new URLSearchParams((location.hash.split('?')[1]||''))).get('service')==='光之療癒'?'光之療癒':'初遇'));
     }
     return h;
   };
