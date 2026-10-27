@@ -45,8 +45,19 @@ function navHtml(active){
  return items.map(([key,label,icon])=>'<a href="'+('#/'+key)+'" class="'+(active===key?'active':'')+'">'+(ICON[icon]||ICON.list)+'<span>'+label+'</span></a>').join('');
 }
 function pageSettings(){return '<div class="page-head"><div class="eyebrow">SERVICE SETTINGS</div><h1 class="page-title">服務設定</h1><p class="page-desc">選擇開放的服務，調整介紹、時間與費用。</p></div><iframe title="服務設定內容" src="./light-healing.html?embed=1" style="width:100%;min-height:980px;border:0;background:transparent;border-radius:18px;display:block" loading="eager"></iframe>';}
+function pageLightHealing(){
+ const rows=[...(CLOUD.bookings||[])].filter(b=>b.journey==='光之療癒').sort((a,b)=>(b.booking_date||'').localeCompare(a.booking_date||'')||String(b.booking_time||'').localeCompare(String(a.booking_time||'')));
+ const pending=rows.filter(b=>b.status==='pending').length;
+ const confirmed=rows.filter(b=>b.status==='confirmed').length;
+ const knownIds=new Set((typeof getT==='function'?getT():[]).map(t=>t.id));
+ return `<div class="page-head"><div class="eyebrow">LIGHT HEALING</div><h1 class="page-title">✦ 光之療癒</h1><p class="page-desc">從這裡查看光之療癒預約；七脈輪、三支精油與歷次療癒紀錄，繼續保存在原本的旅人檔案裡。</p></div>
+ <div class="stat-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="stat-card"><div class="num">${rows.length}</div><div class="lbl">預約總數</div></div><div class="stat-card"><div class="num">${pending}</div><div class="lbl">待確認</div></div><div class="stat-card"><div class="num">${confirmed}</div><div class="lbl">已成立</div></div></div>
+ <div class="form-actions" style="margin:18px 0;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary" href="#/bookings">查看預約管理</a><a class="btn btn-ghost" href="#/travelers">旅人紀錄／新增療癒</a></div>
+ <div class="section-title"><h3>光之療癒預約</h3></div>
+ ${rows.length?`<div class="journey-list">${rows.map(b=>`<div class="paper-card" style="margin-bottom:12px"><div class="jc-head"><div><div class="jc-name">${esc(b.traveler_name||'旅人')}</div><div class="jc-meta">${esc(b.booking_date||'')} ・ ${esc(String(b.booking_time||'').slice(0,5))}</div></div><span class="type-badge">${esc(typeof bookingStatusLabel==='function'?bookingStatusLabel(b.status):b.status)}</span></div><div class="jc-block"><div class="k">聯絡</div><div class="v">${esc(b.contact_method||'LINE')}｜${esc(b.instagram||'—')}</div></div><div class="form-actions">${b.traveler_id&&knownIds.has(b.traveler_id)?`<a class="btn btn-ghost btn-sm" href="#/traveler/${encodeURIComponent(b.traveler_id)}">查看旅人／療癒紀錄</a>`:`<a class="btn btn-ghost btn-sm" href="#/travelers">前往旅人紀錄</a>`}</div></div>`).join('')}</div>`:'<div class="empty"><p>目前沒有光之療癒預約，可從旅人紀錄建立服務紀錄。</p></div>'}`;
+}
 function pageMore(){
- const items=[['programs','三段旅程','查看初遇、拾光、同行的原有紀錄'],['birthday','生日拾光','生日拾光訂單與製作'],['traveler-new','新增旅人','建立新的旅人資料'],['start','開啟旅程','新增初遇、拾光、同行紀錄'],['income','副業收入','查看收入與明細'],['backup','資料備份','匯出或匯入備份']];
+ const items=[['light-healing','光之療癒','查看光之療癒預約，並進入旅人療癒紀錄'],['programs','三段旅程','查看初遇、拾光、同行的原有紀錄'],['birthday','生日拾光','生日拾光訂單與製作'],['traveler-new','新增旅人','建立新的旅人資料'],['start','開啟旅程','新增初遇、拾光、同行紀錄'],['income','副業收入','查看收入與明細'],['backup','資料備份','匯出或匯入備份']];
  return '<div class="page-head"><div class="eyebrow">More</div><h1 class="page-title">更多功能</h1><p class="page-desc">常用功能留在底部，其他功能集中在這裡。</p></div><div class="journey-list">'+items.map(([key,title,desc])=>'<a href="#/'+key+'" class="paper-card" style="display:block;text-decoration:none;color:inherit;margin-bottom:12px"><div style="font-weight:700;font-size:17px">'+title+'</div><div class="page-desc">'+desc+'</div></a>').join('')+'</div>';
 }
 
@@ -63,6 +74,7 @@ function render(){
   else if(page==='programs'||page==='program') activeKey='more';
   else if(page==='birthday'||page==='birthday-new'||page==='birthday-edit') activeKey='more';
   else if(page==='bookings') activeKey='bookings';
+  else if(page==='light-healing') activeKey='more';
   else if(page==='settings') activeKey='settings';
   else if(page==='travelers'||page==='traveler') activeKey='travelers';
   else if(page==='traveler-new') activeKey='travelers';
@@ -95,6 +107,7 @@ function render(){
   else if(page==='birthday-new') main.innerHTML=pageBirthdayForm(null);
   else if(page==='birthday-edit') main.innerHTML=pageBirthdayForm(parts[1]);
   else if(page==='bookings') main.innerHTML=pageBookings();
+  else if(page==='light-healing') main.innerHTML=pageLightHealing();
   else if(page==='settings') main.innerHTML=pageSettings();
   else if(page==='travelers') main.innerHTML=pageTravelerList();
   else if(page==='traveler-new') main.innerHTML=pageTravelerForm(null);
