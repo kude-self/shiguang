@@ -9,7 +9,27 @@ function hashQuery(){
   const h=(location.hash||'').split('?')[1]||'';
   return new URLSearchParams(h);
 }
-window.addEventListener('hashchange',render);
+let bookingRefreshInFlight=false;
+async function refreshBookingView(){
+  if(bookingRefreshInFlight||!SB_SESSION?.access_token)return;
+  bookingRefreshInFlight=true;
+  try{
+    await loadCloud();
+    if(parseHash()[0]==='bookings')render();
+  }catch(e){
+    if(parseHash()[0]==='bookings'){
+      const main=document.getElementById('main');
+      if(main) main.insertAdjacentHTML('afterbegin','<div class="helper-box" role="alert">預約資料更新失敗，請重新整理頁面後再試。</div>');
+    }
+  }finally{bookingRefreshInFlight=false}
+}
+window.addEventListener('hashchange',()=>{
+  render();
+  if(parseHash()[0]==='bookings')refreshBookingView();
+});
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden&&parseHash()[0]==='bookings')refreshBookingView();
+});
 window.addEventListener('DOMContentLoaded',()=>bootCloud());
 async function bootCloud(){
   if(!SB_SESSION?.access_token||!await ensureSb()){showLogin();return}
